@@ -16,7 +16,7 @@
 
 <hr>
 
-<h2>🚀 Version 2 Features</h2>
+<h2>🚀 Features</h2>
 
 <ul>
   <li>✅ Skip Intro</li>
