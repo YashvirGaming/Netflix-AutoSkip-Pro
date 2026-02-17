@@ -2,7 +2,7 @@
   "name": "Netflix AutoSkip PRO",
   "description": "Automatically skip intros, recaps, and next episodes — instantly and seamlessly.",
   "author": "Yashvir Gaming",
-  "version": "1.0",
+  "version": "2.0",
   "manifest_version": 3,
 
   "background": {
