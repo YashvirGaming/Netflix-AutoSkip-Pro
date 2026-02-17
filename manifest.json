@@ -23,6 +23,10 @@
     "storage"
   ],
 
+  "host_permissions": [
+    "*://*.netflix.com/*"
+  ],
+
   "action": {
     "default_popup": "source/Popup.html",
     "default_icon": {

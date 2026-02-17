@@ -1,183 +1,142 @@
+// ===============================
+// BASIC SKIP TOGGLES
+// ===============================
+
 let skipIntroCheckbox = document.getElementById("skip-intro");
 let skipRecapCheckbox = document.getElementById("skip-recap");
 let skipNextCheckbox = document.getElementById("skip-next");
-let toggleExemptButton = document.getElementById("toggle-exempt");
-let currentTitleSpan = document.getElementById("current-title");
-let currentTitleContainer = document.getElementById("current-title-container");
-let notOnNetflixDiv = document.getElementById("not-on-netflix");
-let exemptListDiv = document.getElementById("exempt-list");
+let skipCreditsCheckbox = document.getElementById("skip-credits");
 
-let currentTitle = null;
-let exemptTitles = [];
-
-skipIntroCheckbox.addEventListener("click", async () => {
-  chrome.storage.local.set({ skipIntro: skipIntroCheckbox.checked });
+skipIntroCheckbox?.addEventListener("click", async () => {
+  await chrome.storage.local.set({ skipIntro: skipIntroCheckbox.checked });
 });
 
-skipRecapCheckbox.addEventListener("click", async () => {
-  chrome.storage.local.set({ skipRecap: skipRecapCheckbox.checked });
+skipRecapCheckbox?.addEventListener("click", async () => {
+  await chrome.storage.local.set({ skipRecap: skipRecapCheckbox.checked });
 });
 
-skipNextCheckbox.addEventListener("click", async () => {
-  chrome.storage.local.set({ skipNext: skipNextCheckbox.checked });
+skipNextCheckbox?.addEventListener("click", async () => {
+  await chrome.storage.local.set({ skipNext: skipNextCheckbox.checked });
 });
 
-toggleExemptButton.addEventListener("click", async () => {
-  if (!currentTitle) return;
-  
-  try {
-    const isCurrentlyExempt = exemptTitles.includes(currentTitle);
-    
-    if (isCurrentlyExempt) {
-      exemptTitles = exemptTitles.filter(title => title !== currentTitle);
-    } else {
-      exemptTitles = [...exemptTitles, currentTitle];
-    }
-    
-    await chrome.storage.local.set({ exemptTitles });
-    
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    await chrome.tabs.sendMessage(tab.id, { action: 'toggleExempt' });
-
-    updateExemptList();
-    updateToggleButton();
-  } catch (error) {
-    console.error('Error toggling exemption status:', error);
-
-    await loadExemptTitles();
-    updateToggleButton();
-  }
+skipCreditsCheckbox?.addEventListener("click", async () => {
+  await chrome.storage.local.set({ skipCredits: skipCreditsCheckbox.checked });
 });
 
-async function loadExemptTitles() {
-  try {
-    const result = await chrome.storage.local.get(['exemptTitles']);
-    exemptTitles = result.exemptTitles || [];
-    updateExemptList();
-  } catch (error) {
-    console.error('Error loading exemption titles:', error);
-  }
-}
+// ===============================
+// SKIP DELAY SLIDER
+// ===============================
 
-function updateExemptList() {
-  if (exemptTitles.length === 0) {
-    exemptListDiv.innerHTML = '<div style="text-align: center; color: #666; font-size: 11px;">No exemption titles</div>';
-    return;
-  }
-  
-  exemptListDiv.innerHTML = '';
-  
-  exemptTitles.forEach((title, index) => {
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'exempt-item';
-    
-    const titleSpan = document.createElement('span');
-    titleSpan.style.flex = '1';
-    titleSpan.style.marginRight = '8px';
-    titleSpan.textContent = title;
-    
-    const removeButton = document.createElement('button');
-    removeButton.className = 'remove-item';
-    removeButton.textContent = 'X';
-    removeButton.title = `Remove "${title}" from exemption list`;
-    removeButton.addEventListener('click', () => removeExemptTitle(title));
-    
-    itemDiv.appendChild(titleSpan);
-    itemDiv.appendChild(removeButton);
-    exemptListDiv.appendChild(itemDiv);
+let skipDelaySlider = document.getElementById("skip-delay");
+let delayValueSpan = document.getElementById("delay-value");
+
+skipDelaySlider?.addEventListener("input", async () => {
+  delayValueSpan.textContent = skipDelaySlider.value;
+  await chrome.storage.local.set({
+    skipDelay: parseInt(skipDelaySlider.value)
   });
-}
+});
 
-window.removeExemptTitle = async function(title) {
-  try {
-    exemptTitles = exemptTitles.filter(t => t !== title);
-    
-    await chrome.storage.local.set({ exemptTitles });
-    
-    updateExemptList();
-    updateToggleButton();
-    
-    if (title === currentTitle) {
-      toggleExemptButton.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        toggleExemptButton.style.transform = 'scale(1)';
-      }, 150);
-    }
-  } catch (error) {
-    console.error('Error removing exemption title:', error);
-    await loadExemptTitles();
-    updateToggleButton();
-  }
-};
+// ===============================
+// SESSION PAUSE
+// ===============================
 
-function updateToggleButton() {
-  if (!currentTitle) {
-    toggleExemptButton.textContent = 'No title detected';
-    toggleExemptButton.className = 'toggle-button disabled-button';
-    toggleExemptButton.disabled = true;
-    return;
-  }
-  
-  const isExempt = exemptTitles.includes(currentTitle);
-  if (isExempt) {
-    toggleExemptButton.textContent = 'Remove from Exemption List';
-    toggleExemptButton.className = 'toggle-button remove-button';
-    toggleExemptButton.disabled = false;
-  } else {
-    toggleExemptButton.textContent = 'Add to Exemption List';
-    toggleExemptButton.className = 'toggle-button add-button';
-    toggleExemptButton.disabled = false;
-  }
-}
+let pauseButton = document.getElementById("pause-session");
 
-async function getCurrentTitle() {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    if (!tab.url.includes('netflix.com')) {
-      currentTitleContainer.style.display = 'none';
-      notOnNetflixDiv.style.display = 'block';
-      return;
-    }
-    
-    currentTitleContainer.style.display = 'block';
-    notOnNetflixDiv.style.display = 'none';
-    
-    const response = await chrome.tabs.sendMessage(tab.id, { action: 'getCurrentTitle' });
-    currentTitle = response?.title || null;
-    
-    if (currentTitle) {
-      currentTitleSpan.textContent = currentTitle;
-    } else {
-      currentTitleSpan.textContent = 'Title not detected';
-    }
-    
-    updateToggleButton();
-  } catch (error) {
-    console.error('Error getting current title:', error);
-    currentTitleContainer.style.display = 'none';
-    notOnNetflixDiv.style.display = 'block';
-  }
-}
+pauseButton?.addEventListener("click", async () => {
+  const { sessionPaused } = await chrome.storage.local.get(["sessionPaused"]);
+  const newState = !sessionPaused;
+
+  await chrome.storage.local.set({ sessionPaused: newState });
+
+  pauseButton.textContent = newState
+    ? "Resume AutoSkip (Session)"
+    : "Pause AutoSkip (Session)";
+});
+
+// ===============================
+// COMPACT MODE
+// ===============================
+
+let compactCheckbox = document.getElementById("compact-mode");
+
+compactCheckbox?.addEventListener("click", () => {
+  document.body.style.width = compactCheckbox.checked ? "240px" : "300px";
+});
+
+// ===============================
+// DONATION BUTTON
+// ===============================
+
+let donateBtn = document.getElementById("donate-btn");
+
+donateBtn?.addEventListener("click", () => {
+  chrome.tabs.create({
+    url: "https://www.paypal.com/paypalme/keshavecaussy"
+  });
+});
+
+// ===============================
+// LOAD SAVED SETTINGS
+// ===============================
 
 async function initializePopup() {
-  chrome.storage.local.get(
-    ["skipIntro", "skipRecap", "skipNext"],
-    ({ skipIntro, skipRecap, skipNext }) => {
-      if (skipIntro) {
-        skipIntroCheckbox.checked = true;
-      }
-      if (skipRecap) {
-        skipRecapCheckbox.checked = true;
-      }
-      if (skipNext) {
-        skipNextCheckbox.checked = true;
-      }
+  try {
+    const {
+      skipIntro,
+      skipRecap,
+      skipNext,
+      skipCredits,
+      skipDelay,
+      sessionPaused
+    } = await chrome.storage.local.get([
+      "skipIntro",
+      "skipRecap",
+      "skipNext",
+      "skipCredits",
+      "skipDelay",
+      "sessionPaused"
+    ]);
+
+    if (skipIntroCheckbox) skipIntroCheckbox.checked = !!skipIntro;
+    if (skipRecapCheckbox) skipRecapCheckbox.checked = !!skipRecap;
+    if (skipNextCheckbox) skipNextCheckbox.checked = !!skipNext;
+    if (skipCreditsCheckbox) skipCreditsCheckbox.checked = !!skipCredits;
+
+    if (skipDelaySlider && delayValueSpan) {
+      skipDelaySlider.value = skipDelay || 0;
+      delayValueSpan.textContent = skipDelay || 0;
     }
-  );
-  
-  await loadExemptTitles();
-  await getCurrentTitle();
+
+    if (pauseButton) {
+      pauseButton.textContent = sessionPaused
+        ? "Resume AutoSkip (Session)"
+        : "Pause AutoSkip (Session)";
+    }
+
+    loadStats();
+
+  } catch (err) {
+    console.error("Popup init error:", err);
+  }
 }
 
 initializePopup();
+
+// ===============================
+// LOAD STATS
+// ===============================
+
+let statIntro = document.getElementById("stat-intro");
+let statRecap = document.getElementById("stat-recap");
+let statNext = document.getElementById("stat-next");
+let statCredits = document.getElementById("stat-credits");
+
+async function loadStats() {
+  const { stats = {} } = await chrome.storage.local.get(["stats"]);
+
+  if (statIntro) statIntro.textContent = stats["player-skip-intro"] || 0;
+  if (statRecap) statRecap.textContent = stats["player-skip-recap"] || 0;
+  if (statNext) statNext.textContent = stats["next-episode-seamless-button"] || 0;
+  if (statCredits) statCredits.textContent = stats["watch-credits-seamless-button"] || 0;
+}

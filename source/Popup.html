@@ -174,26 +174,46 @@
       box-shadow: 0 0 8px rgba(255,0,0,0.6);
     }
 
-    /* Credits */
-    .credits {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 11px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      padding-top: 10px;
-    }
+	/* Donate Button */
+	#donate-btn {
+	  background: linear-gradient(135deg, #f5c518, #ff9800);
+	  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+	  animation: donateGlow 2.5s infinite ease-in-out;
+	}
 
-    .credits a {
-      color: #e50914;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.2s;
-    }
+	@keyframes donateGlow {
+	  0% { box-shadow: 0 0 8px rgba(255, 152, 0, 0.4); }
+	  50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.9); }
+	  100% { box-shadow: 0 0 8px rgba(255, 152, 0, 0.4); }
+	}
 
-    .credits a:hover {
-      text-decoration: underline;
-      color: #ff3c3c;
-    }
+	/* Credits */
+	.credits {
+	  margin-top: 15px;
+	  text-align: center;
+	  font-size: 11px;
+	  border-top: 1px solid rgba(255,255,255,0.08);
+	  padding-top: 10px;
+	}
+
+	.credits a {
+	  color: #e50914;
+	  text-decoration: none;
+	  font-weight: 600;
+	  transition: 0.2s;
+	  animation: glowPulse 2s infinite ease-in-out;
+	}
+
+	.credits a:hover {
+	  text-decoration: underline;
+	  color: #ff3c3c;
+	}
+
+	@keyframes glowPulse {
+	  0% { text-shadow: 0 0 5px #e50914; }
+	  50% { text-shadow: 0 0 15px #ff2a2a; }
+	  100% { text-shadow: 0 0 5px #e50914; }
+	}
 
   </style>
 </head>
@@ -201,61 +221,77 @@
 <body>
 
   <div class="section">
-    <div class="section-title">Settings</div>
+    <div class="section-title">Playback Controls</div>
 
     <div class="checkbox-item">
       <input type="checkbox" id="skip-intro">
-      <label for="skip-intro">Skip Intro</label>
+      <label>Skip Intro</label>
     </div>
 
     <div class="checkbox-item">
       <input type="checkbox" id="skip-recap">
-      <label for="skip-recap">Skip Recap</label>
+      <label>Skip Recap</label>
     </div>
 
     <div class="checkbox-item">
       <input type="checkbox" id="skip-next">
-      <label for="skip-next">Skip Next Episode</label>
+      <label>Skip Next Episode</label>
     </div>
-  </div>
 
-  <div class="current-title">
-    Playing: <span id="current-title">Loading...</span>
+    <div class="checkbox-item">
+      <input type="checkbox" id="skip-credits">
+      <label>Skip Credits</label>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label style="font-size:11px;">Skip Delay (ms)</label>
+      <input type="range" id="skip-delay" min="0" max="2000" step="100" style="width:100%;">
+      <div style="font-size:11px;text-align:right;">
+        <span id="delay-value">0</span> ms
+      </div>
+    </div>
   </div>
 
   <div class="section">
-    <div class="section-title">Exemption List</div>
+    <div class="section-title">Session Controls</div>
 
-    <div id="current-title-container" style="display:none;">
-      <button id="toggle-exempt" class="toggle-button disabled-button" disabled>
-        Loading...
-      </button>
-    </div>
+    <button id="pause-session" class="toggle-button">Pause AutoSkip (Session)</button>
 
-    <div id="not-on-netflix" style="display:none;">
-      <div class="current-title">
-        Not on Netflix — exemption unavailable
-      </div>
-    </div>
-
-    <div style="margin-bottom:5px;font-size:11px;">
-      Exemption Titles:
-    </div>
-
-    <div id="exempt-list" class="exempt-list">
-      <div style="text-align:center;color:#888;font-size:11px;">
-        No exemption titles
-      </div>
+    <div class="checkbox-item">
+      <input type="checkbox" id="compact-mode">
+      <label>Compact Mode</label>
     </div>
   </div>
+
+  <div class="section">
+    <div class="section-title">Stats</div>
+    <div style="font-size:12px;">
+      Intro: <span id="stat-intro">0</span><br>
+      Recap: <span id="stat-recap">0</span><br>
+      Next: <span id="stat-next">0</span><br>
+      Credits: <span id="stat-credits">0</span>
+    </div>
+  </div>
+
+	<div class="section">
+	  <div class="section-title">Support Development</div>
+
+	  <button id="donate-btn" class="toggle-button">
+		&#10084; Donate via PayPal
+	  </button>
+
+	  <div style="font-size:10px; text-align:center; opacity:0.7;">
+		Optional — helps improve the extension
+	  </div>
+	</div>
 
   <div class="credits">
     Coded By 
     <a href="https://www.facebook.com/yashvirgaming.info" target="_blank">
       Yashvir Gaming
     </a>
+    <div style="font-size:10px;margin-top:5px;">v2.0</div>
   </div>
 
   <script src="Popup.js"></script>
 </body>
-</html>
