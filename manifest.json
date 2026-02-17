@@ -4,19 +4,25 @@
   "author": "Yashvir Gaming",
   "version": "1.0",
   "manifest_version": 3,
+
   "background": {
     "service_worker": "source/Playground.js"
   },
+
   "content_scripts": [
     {
       "matches": [
-        "*://*/*"
+        "*://*.netflix.com/*"
       ],
       "js": ["source/ContentEngine.js"],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
-  "permissions": ["storage", "activeTab"],
+
+  "permissions": [
+    "storage"
+  ],
+
   "action": {
     "default_popup": "source/Popup.html",
     "default_icon": {
@@ -26,6 +32,7 @@
       "128": "images/netflix-autoskip-pro-128.png"
     }
   },
+
   "icons": {
     "16": "images/netflix-autoskip-pro-16.png",
     "32": "images/netflix-autoskip-pro-32.png",
