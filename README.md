@@ -9,6 +9,11 @@
 </p>
 
 <p align="center">
+  <img width="627" height="163" alt="campaign"
+       src="https://github.com/user-attachments/assets/eee8aa75-2d25-47f0-9302-f10fb747576c" />
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Chrome-Supported-e50914?style=for-the-badge&logo=google-chrome&logoColor=white">
   <img src="https://img.shields.io/badge/Brave-Supported-orange?style=for-the-badge&logo=brave&logoColor=white">
   <img src="https://img.shields.io/github/stars/YashvirGaming/Netflix-AutoSkip-Pro?style=for-the-badge&color=gold">
@@ -33,9 +38,13 @@
 
 <hr>
 
+
 <h2>🧠 Smart Engine</h2>
 
-Netflix AutoSkip PRO uses:
+<p align="center">
+<img width="332" height="606" alt="configuration" src="https://github.com/user-attachments/assets/757f6c2a-de08-4c0f-90d9-7460e7c41bdf" />
+
+<b>Netflix AutoSkip PRO uses:</b>
 
 <ul>
   <li>MutationObserver-based detection (no aggressive polling)</li>
